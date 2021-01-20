@@ -4,6 +4,9 @@ var semanticChecker = require(__dirname + "/../semantic-checker");
 var graphmlConstants = require(__dirname + "/../graphml-constants");
 var initWorkbook = require(__dirname + "/../helpers.js").initWorkbook;
 
+var libxmlXSD = require('libxml-xsd')
+var XSD2 = require('libxmljs2-xsd')
+
 module.exports = function (graphml) {
     var graph;
     var key;
@@ -13,6 +16,22 @@ module.exports = function (graphml) {
     // These warnings don't exist. They are a TODO
     // workbook.warnings.push(constants.warnings.noSpeciesInformationDetected);
     // workbook.warnings.push(constants.warnings.missingExpressionData); Doesn't exist
+
+    // Ian's different attempts at xml validation using graphml
+    // I used some other methods
+    // these gave me the most promising errors
+    //  the others ones were errors like "library not installed" (some old libraries / too new for our node)
+    //  or noSuchFile errors (even though its all local now)
+    
+    libxmlXSD.parseFile('./graphml-structure.xsd', function(err, schema){
+        schema.validate(graphml, function(err, validationErrors){
+
+        })
+    })
+
+    var schema = XSD2.parseFile('./graphml-structure.xsd')
+    var validationErrors = schema.validate(graphml)
+
 
     var parseErr = function (err) {
         err = err.toString().split("\n").join(" ");
